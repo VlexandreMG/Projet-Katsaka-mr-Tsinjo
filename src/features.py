@@ -68,6 +68,8 @@ def extraire_features_image(chemin_image):
     # X2 = Variance de l'intensité des gradients (plus il y a de pustules, plus ça varie) [cite: 30, 32]
     rugosite = np.var(magnitude_feuille) if len(magnitude_feuille) > 0 else 0.0
     
+    
+
     return {
         "pct_rouille": float(pct_rouille),
         "rugosite": float(rugosite)
@@ -111,7 +113,7 @@ def generer_dataset_complet(dossier_racine):
                         "pct_rouille": features["pct_rouille"],
                         "rugosite": features["rugosite"],
                         "votre_variable": 0.0, # À remplacer par ta variable personnelle [cite: 33, 34]
-                        "label_malade": label [cite: 38]
+                        "label_malade": label
                     }
                     donnees_combinees.append(ligne)
                     

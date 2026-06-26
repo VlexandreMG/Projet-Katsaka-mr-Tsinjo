@@ -1,5 +1,5 @@
 # main.py
-from src.features import generer_dataset_complet
+from features import generer_dataset_complet
 
 if __name__ == "__main__":
     print("⏳ Analyse des feuilles de maïs en cours...")
