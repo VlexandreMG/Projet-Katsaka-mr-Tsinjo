@@ -68,11 +68,16 @@ def extraire_features_image(chemin_image):
     # X2 = Variance de l'intensité des gradients (plus il y a de pustules, plus ça varie) [cite: 30, 32]
     rugosite = np.var(magnitude_feuille) if len(magnitude_feuille) > 0 else 0.0
     
-    
+    # --- Variable X3 (PERSONNELLE) : pct_vert_sain --- [cite: 33, 34]
+    # La zone verte saine correspond aux pixels de la feuille qui n'ont pas de rouille
+    masque_vert_sain = cv2.bitwise_and(masque_feuille_totale, cv2.bitwise_not(masque_rouille_strict))
+    nb_pixels_vert_sain = np.sum(masque_vert_sain == 255)
+    pct_vert_sain = nb_pixels_vert_sain / nb_pixels_feuille
 
     return {
         "pct_rouille": float(pct_rouille),
-        "rugosite": float(rugosite)
+        "rugosite": float(rugosite),
+        "pct_vert_sain": float(pct_vert_sain)
     }
 
 def generer_dataset_complet(dossier_racine):
@@ -112,7 +117,7 @@ def generer_dataset_complet(dossier_racine):
                         "ID_Image": nom_fichier,
                         "pct_rouille": features["pct_rouille"],
                         "rugosite": features["rugosite"],
-                        "votre_variable": 0.0, # À remplacer par ta variable personnelle [cite: 33, 34]
+                        "pct_vert_sain": features["pct_vert_saini"], # À remplacer par ta variable personnelle [cite: 33, 34]
                         "label_malade": label
                     }
                     donnees_combinees.append(ligne)
@@ -123,22 +128,3 @@ def generer_dataset_complet(dossier_racine):
     # Transformation de la liste de dictionnaires en DataFrame Pandas 
     df = pd.DataFrame(donnees_combinees)
     return df
-
-# --- BLOC DE TEST DE NOTRE MVP ---
-if __name__ == "__main__":
-    # Spécifie ici le chemin vers ton dossier de données
-    # Structure attendue : data/saines/ et data/malades/ [cite: 13, 14]
-    DOSSIER_DATA = "data" 
-    
-    print("🚀 Démarrage de l'extraction des caractéristiques...")
-    df_features = generer_dataset_complet(DOSSIER_DATA)
-    
-    # Affichage du résultat final
-    if not df_features.empty:
-        print("\n✅ Extraction réussie ! Aperçu du DataFrame obtenu :")
-        print(df_features.head())
-        
-        # Optionnel : Sauvegarder en CSV pour la suite (Partie 3)
-        # df_features.to_csv("dataset_maïs_features.csv", index=False)
-    else:
-        print("\n⚠️ Aucun DataFrame généré. Vérifie que tes images sont bien dans 'data/saines/' ou 'data/malades/'.")
